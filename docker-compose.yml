@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+    db:
+        image: mysql:8.4.2
+        container_name: persensi-db
+        restart: unless-stopped
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: persensi_root
+            MYSQL_DATABASE: persensi_db
+            MYSQL_USER: persensi_user
+            MYSQL_PASSWORD: persensi_password
+            TZ: Asia/Jakarta
+        volumes:
+            - persensi-db-data:/var/lib/mysql
+        command: >
+            mysqld
+            --character-set-server=utf8mb4
+            --collation-server=utf8mb4_unicode_ci
+            --sql-mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+        healthcheck:
+            test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    persensi-db-data: {}
