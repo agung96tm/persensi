@@ -196,9 +196,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-people"></i>
-                            <span>Manajemen User</span>
+                         <a class="nav-link" href="{{ route('mahasiswa.index') }}">
+                                <i class="bi bi-mortarboard"></i>
+                                <span>Data Mahasiswa</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -223,6 +223,12 @@
                         <a class="nav-link" href="#">
                             <i class="bi bi-gear"></i>
                             <span>Pengaturan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('users.index') }}">
+                            <i class="bi bi-people"></i>
+                            <span>Manajemen User</span>
                         </a>
                     </li>
                 </ul>

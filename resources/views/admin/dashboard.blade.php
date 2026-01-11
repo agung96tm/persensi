@@ -116,10 +116,10 @@
                 </h5>
             </div>
             <div class="card-body">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-primary">
-                        <i class="bi bi-person-plus me-2"></i>Tambah User
-                    </button>
+                 <div class="d-grid gap-2">
+                    <a href="{{ route('users.create') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-person-plus me-2"></i>Tambah User
+                     </a>
                     <button class="btn btn-outline-success">
                         <i class="bi bi-calendar-plus me-2"></i>Buat Sesi Baru
                     </button>

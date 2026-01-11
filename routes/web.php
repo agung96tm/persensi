@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\MahasiswaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,7 +33,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.dashboard');
     })->name('dashboard');
 });
-
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::resource('users', UserController::class);
+});
+Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
+    Route::resource('mahasiswa', MahasiswaController::class);
+});
 // User Routes
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', function () {
