@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MahasiswaController;
+use App\Http\Controllers\Admin\SesiController;
+use App\Http\Controllers\Admin\KehadiranController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,7 +40,29 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 });
 Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
     Route::resource('mahasiswa', MahasiswaController::class);
+    Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('mahasiswa.import');
 });
+
+// Sesi Routes
+Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('sesi', SesiController::class);
+    Route::post('sesi/{id}/selesai', [SesiController::class,'selesai'])
+        ->name('sesi.selesai');
+});
+
+// Kehadiran Routes
+Route::middleware(['auth','role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('kehadiran/{sesi}', [KehadiranController::class,'index'])
+            ->name('kehadiran.index');
+
+        Route::post('kehadiran', [KehadiranController::class,'store'])
+            ->name('kehadiran.store');
+});
+
 // User Routes
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', function () {

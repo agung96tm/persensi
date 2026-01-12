@@ -10,7 +10,7 @@ class Sesi extends Model
     use HasFactory;
 
     protected $table = 'sesi';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'nama_sesi',
