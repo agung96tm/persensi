@@ -7,6 +7,7 @@
         <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary">Tambah</a>
     </div>
 
+
     <div class="card-body">
         <table class="table table-bordered">
             <tr>
