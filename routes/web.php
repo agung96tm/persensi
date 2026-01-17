@@ -51,17 +51,11 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 });
 
 // Kehadiran Routes
-Route::middleware(['auth','role:admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-
-        Route::get('kehadiran/{sesi}', [KehadiranController::class,'index'])
-            ->name('kehadiran.index');
-
-        Route::post('kehadiran', [KehadiranController::class,'store'])
-            ->name('kehadiran.store');
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/kehadiran/{sesi}', [KehadiranController::class, 'index'])
+        ->name('kehadiran.index');
 });
+
 
 // User Routes
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {

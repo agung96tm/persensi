@@ -48,18 +48,24 @@
                             <span class="badge bg-secondary">SELESAI</span>
                         @endif
                     </td>
-                    <td>
-                        @if($item->status == 'aktif')
-                        <form action="{{ route('admin.sesi.selesai',$item->id) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-danger btn-sm">
-                                <i class="bi bi-x-circle"></i> Tutup
-                            </button>
-                        </form>
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
+                    <td class="text-center">
+    <a href="{{ route('admin.kehadiran.index', $item->id) }}"
+       class="btn btn-info btn-sm mb-1">
+        <i class="bi bi-people"></i> Kehadiran
+    </a>
+
+    @if($item->status == 'aktif')
+        <form action="{{ route('admin.sesi.selesai',$item->id) }}"
+              method="POST"
+              onsubmit="return confirm('Tutup sesi ini?')">
+            @csrf
+            <button class="btn btn-danger btn-sm">
+                <i class="bi bi-x-circle"></i> Tutup
+            </button>
+        </form>
+    @endif
+</td>
+
                 </tr>
                 @empty
                 <tr>
