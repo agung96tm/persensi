@@ -202,14 +202,14 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.sesi.*') ? 'active' : '' }}"
+                        <a class="nav-link {{ request()->routeIs('admin.kehadiran.*') ? 'active' : '' }}"
                               href="{{ route('admin.sesi.index') }}">
                               <i class="bi bi-calendar-check"></i>
                               <span>Kehadiran</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.sesi.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.sesi.*') ? 'active' : '' }}" href="{{ route('admin.sesi.index') }}">
                             <i class="bi bi-clock-history"></i>
                             <span>Sesi</span>
                         </a>
