@@ -30,6 +30,15 @@ class SesiController extends Controller
             $query->where('status', $request->status);
         }
         
+        // Filter by tanggal
+        if ($request->has('tanggal_dari') && $request->tanggal_dari) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+        }
+        
+        if ($request->has('tanggal_sampai') && $request->tanggal_sampai) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
+        }
+        
         // Auto close expired sessions
         $this->autoCloseSesi();
         

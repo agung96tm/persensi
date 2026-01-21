@@ -18,7 +18,7 @@
                     <i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($sesi->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($sesi->jam_selesai)->format('H:i') }}
                 </small>
             </div>
-            <a href="{{ route('admin.sesi.index') }}" class="btn btn-light btn-sm">
+            <a href="{{ route('admin.sesi.index', ['tanggal_dari' => \Carbon\Carbon::parse($sesi->tanggal)->format('Y-m-d'), 'tanggal_sampai' => \Carbon\Carbon::parse($sesi->tanggal)->format('Y-m-d')]) }}" class="btn btn-light btn-sm">
                 <i class="bi bi-arrow-left me-1"></i>Kembali ke Sesi
             </a>
         </div>

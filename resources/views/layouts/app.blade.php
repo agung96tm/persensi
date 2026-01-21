@@ -172,6 +172,55 @@
         .stat-card.info {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
+
+        .nav-submenu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-item.has-submenu.active .nav-submenu {
+            max-height: 500px;
+        }
+
+        .nav-submenu .nav-link {
+            padding: 0.5rem 1.5rem 0.5rem 3.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .nav-submenu .nav-link::before {
+            content: '└';
+            position: absolute;
+            left: 2.5rem;
+            opacity: 0.5;
+        }
+
+        .nav-link.has-submenu {
+            position: relative;
+        }
+
+        .nav-link.has-submenu::after {
+            content: '\f282';
+            font-family: 'bootstrap-icons';
+            margin-left: auto;
+            transition: transform 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-item.has-submenu.active > .nav-link.has-submenu::after {
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 768px) {
+            .nav-submenu {
+                max-height: 500px !important;
+            }
+        }
     </style>
 
     @yield('styles')
@@ -201,18 +250,28 @@
                                 <span>Data Mahasiswa</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.kehadiran.*') ? 'active' : '' }}"
-                              href="{{ route('admin.sesi.index') }}">
-                              <i class="bi bi-calendar-check"></i>
-                              <span>Kehadiran</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.sesi.*') ? 'active' : '' }}" href="{{ route('admin.sesi.index') }}">
+                    <li class="nav-item has-submenu {{ request()->routeIs('admin.sesi.*') || request()->routeIs('admin.kehadiran.*') ? 'active' : '' }}">
+                        <a class="nav-link has-submenu {{ request()->routeIs('admin.sesi.*') || request()->routeIs('admin.kehadiran.*') ? 'active' : '' }}" 
+                           href="{{ route('admin.sesi.index') }}">
                             <i class="bi bi-clock-history"></i>
                             <span>Sesi</span>
                         </a>
+                        <ul class="nav-submenu">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.sesi.*') ? 'active' : '' }}" 
+                                   href="{{ route('admin.sesi.index') }}">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Daftar Sesi</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.kehadiran.*') ? 'active' : '' }}" 
+                                   href="{{ route('admin.sesi.index') }}">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Kehadiran</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
@@ -348,6 +407,27 @@
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('show');
         }
+
+        // Toggle submenu and auto-open if active
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-open submenu if on sesi or kehadiran pages
+            const sesiSubmenu = document.querySelector('.nav-item.has-submenu');
+            if (sesiSubmenu && sesiSubmenu.classList.contains('active')) {
+                sesiSubmenu.classList.add('active');
+            }
+
+            // Toggle submenu on click (desktop only)
+            const submenuLinks = document.querySelectorAll('.nav-link.has-submenu');
+            submenuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (window.innerWidth > 768 && !this.href.includes('#') && !window.location.href.includes('sesi') && !window.location.href.includes('kehadiran')) {
+                        e.preventDefault();
+                        const navItem = this.closest('.nav-item.has-submenu');
+                        navItem.classList.toggle('active');
+                    }
+                });
+            });
+        });
     </script>
 
     @yield('scripts')

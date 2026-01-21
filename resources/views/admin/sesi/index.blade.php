@@ -17,31 +17,61 @@
     <div class="card-body">
         <!-- Search & Filter -->
         <div class="row mb-3">
-            <div class="col-md-8">
-                <form method="GET" action="{{ route('admin.sesi.index') }}" class="d-flex gap-2">
-                    <input 
-                        type="text" 
-                        name="search" 
-                        class="form-control" 
-                        placeholder="Cari nama sesi atau kelas..." 
-                        value="{{ request('search') }}"
-                    >
-                    <select name="status" class="form-select" style="width: auto;">
-                        <option value="">Semua Status</option>
-                        <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                        <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                    </select>
-                    <button type="submit" class="btn btn-outline-primary">
-                        <i class="bi bi-search"></i>
-                    </button>
-                    @if(request('search') || request('status'))
-                        <a href="{{ route('admin.sesi.index') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-circle"></i>
-                        </a>
+            <div class="col-md-12 mb-3">
+                <form method="GET" action="{{ route('admin.sesi.index') }}" class="d-flex gap-2 align-items-end">
+                    <div class="flex-grow-1">
+                        <label class="form-label small text-muted mb-1">Cari</label>
+                        <input 
+                            type="text" 
+                            name="search" 
+                            class="form-control" 
+                            placeholder="Nama sesi atau kelas..." 
+                            value="{{ request('search') }}"
+                        >
+                    </div>
+                    <div style="width: 150px;">
+                        <label class="form-label small text-muted mb-1">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                            <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        </select>
+                    </div>
+                    <div style="width: 160px;">
+                        <label class="form-label small text-muted mb-1">Tanggal Dari</label>
+                        <input 
+                            type="date" 
+                            name="tanggal_dari" 
+                            class="form-control" 
+                            value="{{ request('tanggal_dari') }}"
+                        >
+                    </div>
+                    <div style="width: 160px;">
+                        <label class="form-label small text-muted mb-1">Tanggal Sampai</label>
+                        <input 
+                            type="date" 
+                            name="tanggal_sampai" 
+                            class="form-control" 
+                            value="{{ request('tanggal_sampai') }}"
+                        >
+                    </div>
+                    <div>
+                        <label class="form-label small text-muted mb-1">&nbsp;</label>
+                        <button type="submit" class="btn btn-outline-primary d-block">
+                            <i class="bi bi-search"></i> Filter
+                        </button>
+                    </div>
+                    @if(request('search') || request('status') || request('tanggal_dari') || request('tanggal_sampai'))
+                        <div>
+                            <label class="form-label small text-muted mb-1">&nbsp;</label>
+                            <a href="{{ route('admin.sesi.index') }}" class="btn btn-outline-secondary d-block">
+                                <i class="bi bi-x-circle"></i> Reset
+                            </a>
+                        </div>
                     @endif
                 </form>
             </div>
-            <div class="col-md-4 text-end">
+            <div class="col-md-12 text-end">
                 <small class="text-muted">
                     Total: <strong>{{ $sesi->total() }}</strong> sesi
                 </small>

@@ -32,7 +32,25 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $totalUsers = \App\Models\User::where('role', 'user')->count();
+        $totalMahasiswa = \App\Models\Mahasiswa::count();
+        $totalSesiAktif = \App\Models\Sesi::where('status', 'aktif')->count();
+        
+        // Kehadiran hari ini
+        $kehadiranHariIni = \App\Models\Kehadiran::whereDate('created_at', today())
+            ->whereIn('status', ['hadir', 'terlambat'])
+            ->count();
+        
+        // Total sesi
+        $totalSesi = \App\Models\Sesi::count();
+        
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalMahasiswa',
+            'totalSesiAktif',
+            'kehadiranHariIni',
+            'totalSesi'
+        ));
     })->name('dashboard');
 });
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
