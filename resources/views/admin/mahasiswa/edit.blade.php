@@ -15,99 +15,118 @@
             @csrf
             @method('PUT')
 
-            <div class="row">
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">
-                        <i class="bi bi-person me-1"></i>Nama Lengkap <span class="text-danger">*</span>
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <label for="nama" class="form-label fw-bold">
+                        <i class="bi bi-person me-1 text-primary"></i>Nama Lengkap 
+                        <span class="text-danger">*</span>
                     </label>
-                    <input
-                        type="text"
-                        class="form-control @error('nama') is-invalid @enderror"
-                        name="nama"
+                    <input 
+                        type="text" 
+                        id="nama"
+                        class="form-control form-control-lg @error('nama') is-invalid @enderror" 
+                        name="nama" 
                         value="{{ old('nama', $mahasiswa->nama) }}"
                         required
+                        autofocus
                     >
                     @error('nama')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
                     @enderror
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">
-                        <i class="bi bi-card-text me-1"></i>NIM <span class="text-danger">*</span>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="nim" class="form-label fw-bold">
+                        <i class="bi bi-card-text me-1 text-primary"></i>NIM 
+                        <span class="text-danger">*</span>
                     </label>
-                    <input
-                        type="text"
-                        class="form-control @error('nim') is-invalid @enderror"
-                        name="nim"
+                    <input 
+                        type="text" 
+                        id="nim"
+                        class="form-control form-control-lg @error('nim') is-invalid @enderror" 
+                        name="nim" 
                         value="{{ old('nim', $mahasiswa->nim) }}"
                         required
                     >
                     @error('nim')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
                     @enderror
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">
-                        <i class="bi bi-credit-card me-1"></i>UID RFID <span class="text-danger">*</span>
+                <div class="col-md-6">
+                    <label for="no_kartu" class="form-label fw-bold">
+                        <i class="bi bi-credit-card me-1 text-primary"></i>UID RFID 
+                        <span class="text-danger">*</span>
                     </label>
-                    <input
-                        type="text"
-                        class="form-control @error('no_kartu') is-invalid @enderror"
-                        name="no_kartu"
+                    <input 
+                        type="text" 
+                        id="no_kartu"
+                        class="form-control form-control-lg @error('no_kartu') is-invalid @enderror" 
+                        name="no_kartu" 
                         value="{{ old('no_kartu', $mahasiswa->no_kartu) }}"
                         required
                     >
                     @error('no_kartu')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
                     @enderror
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">
-                        <i class="bi bi-building me-1"></i>Kelas <span class="text-danger">*</span>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="kelas" class="form-label fw-bold">
+                        <i class="bi bi-building me-1 text-primary"></i>Kelas 
+                        <span class="text-danger">*</span>
                     </label>
-                    <input
-                        type="text"
-                        class="form-control @error('kelas') is-invalid @enderror"
-                        name="kelas"
+                    <input 
+                        type="text" 
+                        id="kelas"
+                        class="form-control form-control-lg @error('kelas') is-invalid @enderror" 
+                        name="kelas" 
                         maxlength="2"
+                        style="text-transform: uppercase"
                         value="{{ old('kelas', $mahasiswa->kelas) }}"
                         required
                     >
                     @error('kelas')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
                     @enderror
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">
-                        <i class="bi bi-envelope me-1"></i>Email Akun
+                <div class="col-md-6">
+                    <label for="email" class="form-label fw-bold">
+                        <i class="bi bi-envelope me-1 text-primary"></i>Email Akun
                     </label>
-                    <input
-                        type="email"
-                        class="form-control"
+                    <input 
+                        type="email" 
+                        id="email"
+                        class="form-control form-control-lg" 
                         value="{{ $mahasiswa->user->email ?? '-' }}"
                         disabled
                     >
-                    <small class="text-muted">
-                        Email tidak dapat diubah dari menu mahasiswa
+                    <small class="form-text text-muted">
+                        <i class="bi bi-info-circle me-1"></i>Email tidak dapat diubah dari menu mahasiswa
                     </small>
                 </div>
             </div>
 
-            <hr>
+            <hr class="my-4">
 
-            <div class="d-flex justify-content-between">
-                <a href="{{ route('mahasiswa.index') }}" class="btn btn-secondary">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ route('mahasiswa.index') }}" class="btn btn-secondary btn-lg">
                     <i class="bi bi-arrow-left me-2"></i>Batal
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary btn-lg">
                     <i class="bi bi-save me-2"></i>Simpan Perubahan
                 </button>
             </div>
