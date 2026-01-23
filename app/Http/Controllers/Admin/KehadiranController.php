@@ -8,6 +8,7 @@ use App\Models\Mahasiswa;
 use App\Models\Sesi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KehadiranController extends Controller
 {
@@ -34,28 +35,8 @@ class KehadiranController extends Controller
     public function index(Request $request, $sesi_id)
     {
         $sesi = Sesi::findOrFail($sesi_id);
-        $query = Mahasiswa::query()
-            ->where('kelas', $sesi->kelas)
-            ->leftJoin('kehadiran', function ($join) use ($sesi_id) {
-                $join->on('mahasiswa.id', '=', 'kehadiran.mahasiswa_id')
-                    ->where('kehadiran.sesi_id', $sesi_id);
-            });
+        $query = $this->buildKehadiranQuery($request, $sesi, $sesi_id);
 
-        // Filter by status
-        if ($request->has('status') && $request->status) {
-            $query->where('kehadiran.status', $request->status);
-        }
-
-        // Search by NIM or Nama
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('mahasiswa.nim', 'like', "%{$search}%")
-                    ->orWhere('mahasiswa.nama', 'like', "%{$search}%");
-            });
-        }
-
-        // Order by nama mahasiswa
         $mahasiswaList = $query->orderBy('mahasiswa.nama')
             ->select([
                 'mahasiswa.*',
@@ -185,5 +166,55 @@ class KehadiranController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menyimpan perubahan: ' . $e->getMessage());
         }
+    }
+
+    public function exportPdf(Request $request, $sesi_id)
+    {
+        $sesi = Sesi::findOrFail($sesi_id);
+        $rows = $this->buildKehadiranQuery($request, $sesi, $sesi_id)
+            ->orderBy('mahasiswa.nama')
+            ->select([
+                'mahasiswa.nim',
+                'mahasiswa.nama',
+                'kehadiran.status as kehadiran_status',
+                'kehadiran.waktu_hadir as kehadiran_waktu_hadir',
+            ])
+            ->get();
+
+        $pdf = Pdf::loadView('admin.kehadiran.pdf', [
+            'sesi' => $sesi,
+            'rows' => $rows,
+            'search' => $request->search,
+            'status' => $request->status,
+        ]);
+
+        $slug = preg_replace('/[^a-zA-Z0-9]+/', '-', strtolower($sesi->nama_sesi));
+        $slug = trim($slug, '-');
+
+        return $pdf->download('kehadiran-sesi-' . $slug . '.pdf');
+    }
+
+    private function buildKehadiranQuery(Request $request, Sesi $sesi, $sesi_id)
+    {
+        $query = Mahasiswa::query()
+            ->where('kelas', $sesi->kelas)
+            ->leftJoin('kehadiran', function ($join) use ($sesi_id) {
+                $join->on('mahasiswa.id', '=', 'kehadiran.mahasiswa_id')
+                    ->where('kehadiran.sesi_id', $sesi_id);
+            });
+
+        if ($request->has('status') && $request->status) {
+            $query->where('kehadiran.status', $request->status);
+        }
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('mahasiswa.nim', 'like', "%{$search}%")
+                    ->orWhere('mahasiswa.nama', 'like', "%{$search}%");
+            });
+        }
+
+        return $query;
     }
 }

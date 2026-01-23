@@ -60,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::resource('users', UserController::class);
 });
 Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
+    Route::get('/mahasiswa/export/pdf', [MahasiswaController::class, 'exportPdf'])->name('mahasiswa.exportPdf');
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('mahasiswa.import');
 });
@@ -75,6 +76,8 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/kehadiran/{sesi}', [KehadiranController::class, 'index'])
         ->name('kehadiran.index');
+    Route::get('/kehadiran/{sesi}/export/pdf', [KehadiranController::class, 'exportPdf'])
+        ->name('kehadiran.exportPdf');
     Route::post('/kehadiran', [KehadiranController::class, 'store'])
         ->name('kehadiran.store');
     Route::put('/kehadiran/{sesi}/mahasiswa/{mahasiswa}', [KehadiranController::class, 'update'])

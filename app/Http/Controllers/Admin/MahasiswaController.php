@@ -11,25 +11,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Imports\MahasiswaImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class MahasiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Mahasiswa::with('user');
-        
-        // Search functionality
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nim', 'like', "%{$search}%")
-                  ->orWhere('nama', 'like', "%{$search}%")
-                  ->orWhere('no_kartu', 'like', "%{$search}%")
-                  ->orWhere('kelas', 'like', "%{$search}%");
-            });
-        }
-        
+        $query = $this->buildMahasiswaQuery($request);
         $mahasiswa = $query->orderBy('nama')->paginate(15)->withQueryString();
         return view('admin.mahasiswa.index', compact('mahasiswa'));
     }
@@ -175,6 +164,37 @@ class MahasiswaController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal mengimport data: ' . $e->getMessage());
         }
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $mahasiswa = $this->buildMahasiswaQuery($request)
+            ->orderBy('nama')
+            ->get();
+
+        $pdf = Pdf::loadView('admin.mahasiswa.pdf', [
+            'mahasiswa' => $mahasiswa,
+            'search' => $request->search,
+        ]);
+
+        return $pdf->download('data-mahasiswa.pdf');
+    }
+
+    private function buildMahasiswaQuery(Request $request)
+    {
+        $query = Mahasiswa::with('user');
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nim', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhere('no_kartu', 'like', "%{$search}%")
+                    ->orWhere('kelas', 'like', "%{$search}%");
+            });
+        }
+
+        return $query;
     }
 
     private function insertMissingKehadiranRaw(int $mahasiswaId, string $kelas): void

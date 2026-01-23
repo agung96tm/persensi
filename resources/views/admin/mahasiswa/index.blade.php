@@ -10,6 +10,9 @@
             <i class="bi bi-mortarboard me-2"></i>Data Mahasiswa
         </h5>
         <div class="d-flex gap-2">
+            <a href="{{ route('mahasiswa.exportPdf', request()->query()) }}" class="btn btn-danger">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+            </a>
             <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i>Tambah Mahasiswa
             </a>

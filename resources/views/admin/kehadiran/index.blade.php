@@ -79,11 +79,17 @@
         <h5 class="mb-0">
             <i class="bi bi-list-check me-2"></i>Daftar Kehadiran
         </h5>
-        @if($sesi->status == 'aktif')
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addKehadiranModal">
-                <i class="bi bi-plus-circle me-1"></i>Tambah Kehadiran
-            </button>
-        @endif
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.kehadiran.exportPdf', array_merge(['sesi' => $sesi->id], request()->query())) }}"
+               class="btn btn-danger btn-sm">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+            </a>
+            @if($sesi->status == 'aktif')
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addKehadiranModal">
+                    <i class="bi bi-plus-circle me-1"></i>Tambah Kehadiran
+                </button>
+            @endif
+        </div>
     </div>
 
     <div class="card-body">
