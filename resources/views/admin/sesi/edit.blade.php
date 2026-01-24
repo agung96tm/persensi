@@ -1,19 +1,29 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Sesi')
-@section('page-title', 'Tambah Sesi Presensi')
+@section('title', 'Edit Sesi')
+@section('page-title', 'Edit Sesi Presensi')
 
 @section('content')
 <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-            <i class="bi bi-plus-circle me-2"></i>Tambah Sesi Presensi
+            <i class="bi bi-pencil-square me-2"></i>Edit Sesi Presensi
         </h5>
+        @if($sesi->status == 'aktif')
+            <span class="badge bg-success fs-6">
+                <i class="bi bi-check-circle me-1"></i>AKTIF
+            </span>
+        @else
+            <span class="badge bg-secondary fs-6">
+                <i class="bi bi-x-circle me-1"></i>SELESAI
+            </span>
+        @endif
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route('admin.sesi.store') }}">
+        <form method="POST" action="{{ route('admin.sesi.update', $sesi->id) }}">
             @csrf
+            @method('PUT')
 
             <div class="row mb-4">
                 <div class="col-md-12">
@@ -27,7 +37,7 @@
                         name="nama_sesi" 
                         class="form-control form-control-lg @error('nama_sesi') is-invalid @enderror" 
                         placeholder="Contoh: Presensi Matakuliah IoT"
-                        value="{{ old('nama_sesi') }}"
+                        value="{{ old('nama_sesi', $sesi->nama_sesi) }}"
                         required
                         autofocus
                     >
@@ -36,9 +46,6 @@
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                         </div>
                     @enderror
-                    <small class="form-text text-muted">
-                        <i class="bi bi-info-circle me-1"></i>Nama atau deskripsi sesi presensi
-                    </small>
                 </div>
             </div>
 
@@ -54,7 +61,7 @@
                         name="kelas" 
                         class="form-control form-control-lg @error('kelas') is-invalid @enderror" 
                         placeholder="Contoh: AA"
-                        value="{{ old('kelas') }}"
+                        value="{{ old('kelas', $sesi->kelas) }}"
                         maxlength="2"
                         style="text-transform: uppercase"
                         required
@@ -64,11 +71,12 @@
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                         </div>
                     @enderror
-                    <small class="form-text text-muted">
-                        <i class="bi bi-info-circle me-1"></i>Kode kelas (maksimal 2 karakter)
-                        <br>
-                        <small class="text-danger ms-4">⚠️ Sesi aktif di kelas ini akan otomatis ditutup</small>
-                    </small>
+                    @if($sesi->status == 'aktif')
+                        <small class="form-text text-warning d-block">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Jika kelas diubah, sesi aktif di kelas baru akan otomatis ditutup
+                        </small>
+                    @endif
                 </div>
 
                 <div class="col-md-6">
@@ -81,8 +89,7 @@
                         id="tanggal"
                         name="tanggal" 
                         class="form-control form-control-lg @error('tanggal') is-invalid @enderror" 
-                        value="{{ old('tanggal', date('Y-m-d')) }}"
-                        min="{{ date('Y-m-d') }}"
+                        value="{{ old('tanggal', $sesi->tanggal->format('Y-m-d')) }}"
                         required
                     >
                     @error('tanggal')
@@ -90,9 +97,6 @@
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                         </div>
                     @enderror
-                    <small class="form-text text-muted">
-                        <i class="bi bi-info-circle me-1"></i>Tanggal sesi presensi (tidak boleh di masa lalu)
-                    </small>
                 </div>
             </div>
 
@@ -107,7 +111,7 @@
                         id="jam_mulai"
                         name="jam_mulai" 
                         class="form-control form-control-lg @error('jam_mulai') is-invalid @enderror" 
-                        value="{{ old('jam_mulai') }}"
+                        value="{{ old('jam_mulai', \Carbon\Carbon::parse($sesi->jam_mulai)->format('H:i')) }}"
                         required
                     >
                     @error('jam_mulai')
@@ -115,9 +119,6 @@
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                         </div>
                     @enderror
-                    <small class="form-text text-muted">
-                        <i class="bi bi-info-circle me-1"></i>Waktu mulai sesi presensi
-                    </small>
                 </div>
 
                 <div class="col-md-6">
@@ -130,7 +131,7 @@
                         id="jam_selesai"
                         name="jam_selesai" 
                         class="form-control form-control-lg @error('jam_selesai') is-invalid @enderror" 
-                        value="{{ old('jam_selesai') }}"
+                        value="{{ old('jam_selesai', \Carbon\Carbon::parse($sesi->jam_selesai)->format('H:i')) }}"
                         required
                     >
                     @error('jam_selesai')
@@ -138,27 +139,39 @@
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                         </div>
                     @enderror
-                    <small class="form-text text-muted">
-                        <i class="bi bi-info-circle me-1"></i>Waktu selesai sesi presensi (harus setelah jam mulai)
-                    </small>
                 </div>
             </div>
 
-            <hr class="my-4">
+            @if($sesi->kehadiran()->count() > 0)
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Sesi ini sudah memiliki <strong>{{ $sesi->kehadiran()->count() }}</strong> data kehadiran.
+                </div>
+            @endif
 
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
-                <strong>Informasi:</strong> Sesi akan otomatis dibuat dengan status <strong>Aktif</strong>. 
-                Jika ada sesi aktif lain di kelas yang sama, maka akan otomatis ditutup.
-            </div>
+            <hr class="my-4">
 
             <div class="d-flex justify-content-between align-items-center">
                 <a href="{{ route('admin.sesi.index') }}" class="btn btn-secondary btn-lg">
                     <i class="bi bi-arrow-left me-2"></i>Batal
                 </a>
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-save me-2"></i>Simpan & Aktifkan
-                </button>
+                <div class="d-flex gap-2">
+                    @if($sesi->kehadiran()->count() == 0)
+                        <form action="{{ route('admin.sesi.destroy', $sesi->id) }}" 
+                              method="POST" 
+                              class="d-inline"
+                              onsubmit="return confirm('Yakin ingin menghapus sesi ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-trash me-2"></i>Hapus
+                            </button>
+                        </form>
+                    @endif
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save me-2"></i>Simpan Perubahan
+                    </button>
+                </div>
             </div>
         </form>
     </div>

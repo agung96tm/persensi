@@ -25,11 +25,11 @@
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h6 class="text-white-50 mb-2">Total Users</h6>
-                    <h2 class="mb-0">0</h2>
+                    <h6 class="text-white-50 mb-2">Total Mahasiswa</h6>
+                    <h2 class="mb-0">{{ $totalMahasiswa ?? 0 }}</h2>
                 </div>
                 <div class="fs-1 opacity-50">
-                    <i class="bi bi-people"></i>
+                    <i class="bi bi-mortarboard"></i>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-white-50 mb-2">Kehadiran Hari Ini</h6>
-                    <h2 class="mb-0">0</h2>
+                    <h2 class="mb-0">{{ $kehadiranHariIni ?? 0 }}</h2>
                 </div>
                 <div class="fs-1 opacity-50">
                     <i class="bi bi-calendar-check"></i>
@@ -52,7 +52,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-white-50 mb-2">Sesi Aktif</h6>
-                    <h2 class="mb-0">0</h2>
+                    <h2 class="mb-0">{{ $totalSesiAktif ?? 0 }}</h2>
                 </div>
                 <div class="fs-1 opacity-50">
                     <i class="bi bi-clock-history"></i>
@@ -64,11 +64,11 @@
         <div class="stat-card info">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h6 class="text-white-50 mb-2">Total Laporan</h6>
-                    <h2 class="mb-0">0</h2>
+                    <h6 class="text-white-50 mb-2">Total Users</h6>
+                    <h2 class="mb-0">{{ $totalUsers ?? 0 }}</h2>
                 </div>
                 <div class="fs-1 opacity-50">
-                    <i class="bi bi-file-text"></i>
+                    <i class="bi bi-people"></i>
                 </div>
             </div>
         </div>
@@ -118,17 +118,14 @@
             <div class="card-body">
                  <div class="d-grid gap-2">
                     <a href="{{ route('users.create') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-person-plus me-2"></i>Tambah User
-                     </a>
-                    <button class="btn btn-outline-success">
+                        <i class="bi bi-person-plus me-2"></i>Tambah Admin
+                    </a>
+                    <a href="{{ route('admin.sesi.create') }}" class="btn btn-outline-success">
                         <i class="bi bi-calendar-plus me-2"></i>Buat Sesi Baru
-                    </button>
-                    <button class="btn btn-outline-info">
-                        <i class="bi bi-file-earmark-text me-2"></i>Generate Laporan
-                    </button>
-                    <button class="btn btn-outline-warning">
+                    </a>
+                    <a href="{{ route('admin.profile.edit') }}" class="btn btn-outline-warning">
                         <i class="bi bi-gear me-2"></i>Pengaturan
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

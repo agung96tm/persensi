@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MahasiswaController;
 use App\Http\Controllers\Admin\SesiController;
 use App\Http\Controllers\Admin\KehadiranController;
+use App\Http\Controllers\Admin\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,13 +33,34 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $totalUsers = \App\Models\User::where('role', 'user')->count();
+        $totalMahasiswa = \App\Models\Mahasiswa::count();
+        $totalSesiAktif = \App\Models\Sesi::where('status', 'aktif')->count();
+        
+        // Kehadiran hari ini
+        $kehadiranHariIni = \App\Models\Kehadiran::whereDate('created_at', today())
+            ->whereIn('status', ['hadir', 'terlambat'])
+            ->count();
+        
+        // Total sesi
+        $totalSesi = \App\Models\Sesi::count();
+        
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalMahasiswa',
+            'totalSesiAktif',
+            'kehadiranHariIni',
+            'totalSesi'
+        ));
     })->name('dashboard');
+    Route::get('/pengaturan', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/pengaturan', [ProfileController::class, 'update'])->name('profile.update');
 });
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::resource('users', UserController::class);
 });
 Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
+    Route::get('/mahasiswa/export/pdf', [MahasiswaController::class, 'exportPdf'])->name('mahasiswa.exportPdf');
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('mahasiswa.import');
 });
@@ -51,9 +73,17 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 });
 
 // Kehadiran Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/kehadiran/{sesi}', [KehadiranController::class, 'index'])
         ->name('kehadiran.index');
+    Route::get('/kehadiran/{sesi}/export/pdf', [KehadiranController::class, 'exportPdf'])
+        ->name('kehadiran.exportPdf');
+    Route::post('/kehadiran', [KehadiranController::class, 'store'])
+        ->name('kehadiran.store');
+    Route::put('/kehadiran/{sesi}/mahasiswa/{mahasiswa}', [KehadiranController::class, 'update'])
+        ->name('kehadiran.update');
+    Route::put('/kehadiran/{sesi}/bulk', [KehadiranController::class, 'bulkUpdate'])
+        ->name('kehadiran.bulkUpdate');
 });
 
 
