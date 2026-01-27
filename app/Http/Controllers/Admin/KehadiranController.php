@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\LogsActivity;
 use App\Models\Kehadiran;
 use App\Models\Mahasiswa;
 use App\Models\Sesi;
@@ -12,6 +13,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class KehadiranController extends Controller
 {
+    use LogsActivity;
+
     private function upsertStatus(Sesi $sesi, Mahasiswa $mahasiswa, string $status)
     {
         if ($mahasiswa->kelas !== $sesi->kelas) {
@@ -109,6 +112,14 @@ class KehadiranController extends Controller
                 'status' => 'hadir'
             ]);
 
+            $this->logActivity(
+                'create',
+                'kehadiran',
+                null,
+                'Menambahkan kehadiran: ' . $mahasiswa->nama,
+                ['sesi_id' => $sesi->id, 'mahasiswa_id' => $mahasiswa->id]
+            );
+
             return back()->with('success', 'Kehadiran berhasil ditambahkan');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menambahkan kehadiran: ' . $e->getMessage());
@@ -130,6 +141,14 @@ class KehadiranController extends Controller
 
             $this->upsertStatus($sesi, $mahasiswa, $request->status);
 
+            $this->logActivity(
+                'update',
+                'kehadiran',
+                null,
+                'Memperbarui kehadiran: ' . $mahasiswa->nama,
+                ['sesi_id' => $sesi->id, 'mahasiswa_id' => $mahasiswa->id, 'status' => $request->status]
+            );
+
             return back()->with('success', 'Status kehadiran berhasil diperbarui');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui status: ' . $e->getMessage());
@@ -148,6 +167,7 @@ class KehadiranController extends Controller
         try {
             $sesi = Sesi::findOrFail($sesi_id);
             $statuses = $request->input('status', []);
+            $updatedCount = 0;
 
             foreach ($statuses as $mahasiswaId => $status) {
                 if (!$status) {
@@ -160,6 +180,17 @@ class KehadiranController extends Controller
                 }
 
                 $this->upsertStatus($sesi, $mahasiswa, $status);
+                $updatedCount++;
+            }
+
+            if ($updatedCount > 0) {
+                $this->logActivity(
+                    'bulk_update',
+                    'kehadiran',
+                    null,
+                    'Memperbarui kehadiran (bulk)',
+                    ['sesi_id' => $sesi->id, 'count' => $updatedCount]
+                );
             }
 
             return back()->with('success', 'Perubahan kehadiran berhasil disimpan');

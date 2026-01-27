@@ -96,12 +96,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-4">
-                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                    Belum ada aktivitas
-                                </td>
-                            </tr>
+                            @forelse($activities as $activity)
+                                <tr>
+                                    <td>{{ $activity->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $activity->description }}</td>
+                                    <td>{{ $activity->user?->name ?? '-' }}</td>
+                                    <td>
+                                        <span class="activity-badge" data-action="{{ strtolower($activity->action ?? '') }}">
+                                            {{ strtoupper($activity->action) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        Belum ada aktivitas
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

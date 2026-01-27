@@ -2,12 +2,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\LogsActivity;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    use LogsActivity;
+
     public function index(Request $request)
     {
         $query = User::with('mahasiswa')->where('role', 'user');
@@ -50,6 +53,14 @@ class UserController extends Controller
             'role' => 'user',
         ]);
 
+        $this->logActivity(
+            'create',
+            'user',
+            null,
+            'Menambahkan user: ' . $request->name,
+            ['email' => $request->email]
+        );
+
         return redirect()->route('users.index')
             ->with('success', 'User berhasil ditambahkan');
     }
@@ -84,6 +95,14 @@ class UserController extends Controller
 
         $user->update($data);
 
+        $this->logActivity(
+            'update',
+            'user',
+            $user->id,
+            'Memperbarui user: ' . $user->name,
+            ['email' => $user->email]
+        );
+
         return redirect()->route('users.index')
             ->with('success', 'User berhasil diupdate');
     }
@@ -92,6 +111,15 @@ class UserController extends Controller
     {
         try {
             $user->delete();
+
+            $this->logActivity(
+                'delete',
+                'user',
+                $user->id,
+                'Menghapus user: ' . $user->name,
+                ['email' => $user->email]
+            );
+
             return back()->with('success', 'User berhasil dihapus');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());

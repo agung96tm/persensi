@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\MahasiswaController;
 use App\Http\Controllers\Admin\SesiController;
 use App\Http\Controllers\Admin\KehadiranController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,27 +33,7 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        $totalUsers = \App\Models\User::where('role', 'user')->count();
-        $totalMahasiswa = \App\Models\Mahasiswa::count();
-        $totalSesiAktif = \App\Models\Sesi::where('status', 'aktif')->count();
-        
-        // Kehadiran hari ini
-        $kehadiranHariIni = \App\Models\Kehadiran::whereDate('created_at', today())
-            ->whereIn('status', ['hadir', 'terlambat'])
-            ->count();
-        
-        // Total sesi
-        $totalSesi = \App\Models\Sesi::count();
-        
-        return view('admin.dashboard', compact(
-            'totalUsers',
-            'totalMahasiswa',
-            'totalSesiAktif',
-            'kehadiranHariIni',
-            'totalSesi'
-        ));
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/pengaturan', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/pengaturan', [ProfileController::class, 'update'])->name('profile.update');
 });

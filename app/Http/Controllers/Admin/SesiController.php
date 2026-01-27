@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Sesi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\LogsActivity;
 use Carbon\Carbon;
 
 
 class SesiController extends Controller
 {
+    use LogsActivity;
+
     public function index(Request $request)
     {
         $query = Sesi::query();
@@ -95,6 +98,14 @@ class SesiController extends Controller
                 'created_by' => auth()->id()
             ]);
 
+            $this->logActivity(
+                'create',
+                'sesi',
+                $sesi->id,
+                'Membuat sesi: ' . $sesi->nama_sesi,
+                ['kelas' => $sesi->kelas, 'tanggal' => $sesi->tanggal]
+            );
+
             return redirect()->route('admin.sesi.index')
                 ->with('success', 'Sesi presensi berhasil dibuat & diaktifkan.');
         } catch (\Exception $e) {
@@ -170,6 +181,14 @@ class SesiController extends Controller
                 'jam_selesai' => $request->jam_selesai,
             ]);
 
+            $this->logActivity(
+                'update',
+                'sesi',
+                $sesi->id,
+                'Memperbarui sesi: ' . $sesi->nama_sesi,
+                ['kelas' => $sesi->kelas, 'tanggal' => $sesi->tanggal]
+            );
+
             return redirect()->route('admin.sesi.index')
                 ->with('success', 'Data sesi berhasil diperbarui');
         } catch (\Exception $e) {
@@ -193,6 +212,14 @@ class SesiController extends Controller
             }
 
             $sesi->delete();
+
+            $this->logActivity(
+                'delete',
+                'sesi',
+                $sesi->id,
+                'Menghapus sesi: ' . $sesi->nama_sesi
+            );
+
             return redirect()->route('admin.sesi.index')
                 ->with('success', 'Sesi berhasil dihapus');
         } catch (\Exception $e) {
@@ -206,6 +233,14 @@ class SesiController extends Controller
         try {
             $sesi = Sesi::findOrFail($id);
             $sesi->update(['status' => 'selesai']);
+
+            $this->logActivity(
+                'close',
+                'sesi',
+                $sesi->id,
+                'Menutup sesi: ' . $sesi->nama_sesi
+            );
+
             return back()->with('success', 'Sesi berhasil ditutup');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menutup sesi: ' . $e->getMessage());

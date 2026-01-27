@@ -221,6 +221,30 @@
                 max-height: 500px !important;
             }
         }
+
+        .activity-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+            border-radius: 999px;
+            color: #fff;
+            background: #6c757d;
+        }
+
+        .activity-badge[data-action="create"] {
+            background: #28a745;
+        }
+
+        .activity-badge[data-action="update"] {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .activity-badge[data-action="delete"] {
+            background: #dc3545;
+        }
     </style>
 
     @yield('styles')

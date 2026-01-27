@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\LogsActivity;
 use App\Models\Mahasiswa;
 use App\Models\User;
 use Carbon\Carbon;
@@ -16,6 +17,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class MahasiswaController extends Controller
 {
+    use LogsActivity;
+
     public function index(Request $request)
     {
         $query = $this->buildMahasiswaQuery($request);
@@ -69,6 +72,14 @@ class MahasiswaController extends Controller
 
             $this->insertMissingKehadiranRaw($mahasiswa->id, strtoupper($request->kelas));
 
+            $this->logActivity(
+                'create',
+                'mahasiswa',
+                $mahasiswa->id,
+                'Menambahkan mahasiswa: ' . $mahasiswa->nama,
+                ['nim' => $mahasiswa->nim, 'kelas' => $mahasiswa->kelas]
+            );
+
             return redirect()->route('mahasiswa.index')
                 ->with('success', 'Mahasiswa & akun user berhasil ditambahkan');
         } catch (\Exception $e) {
@@ -121,6 +132,14 @@ class MahasiswaController extends Controller
                 ]);
             }
 
+            $this->logActivity(
+                'update',
+                'mahasiswa',
+                $mahasiswa->id,
+                'Memperbarui mahasiswa: ' . $mahasiswa->nama,
+                ['nim' => $mahasiswa->nim, 'kelas' => $mahasiswa->kelas]
+            );
+
             return redirect()->route('mahasiswa.index')
                 ->with('success', 'Data mahasiswa berhasil diperbarui');
         } catch (\Exception $e) {
@@ -138,6 +157,14 @@ class MahasiswaController extends Controller
             }
 
             $mahasiswa->delete();
+
+            $this->logActivity(
+                'delete',
+                'mahasiswa',
+                $mahasiswa->id,
+                'Menghapus mahasiswa: ' . $mahasiswa->nama,
+                ['nim' => $mahasiswa->nim]
+            );
 
             return back()->with('success', 'Mahasiswa berhasil dihapus');
         } catch (\Exception $e) {
@@ -157,6 +184,13 @@ class MahasiswaController extends Controller
 
         try {
             Excel::import(new MahasiswaImport, $request->file('file'));
+
+            $this->logActivity(
+                'import',
+                'mahasiswa',
+                null,
+                'Import data mahasiswa'
+            );
 
             return redirect()
                 ->route('mahasiswa.index')
