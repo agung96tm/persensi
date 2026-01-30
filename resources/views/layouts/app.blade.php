@@ -320,19 +320,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('user.kehadiran') ? 'active' : '' }}" href="{{ route('user.kehadiran') }}">
                             <i class="bi bi-calendar-check"></i>
                             <span>Kehadiran Saya</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('user.riwayat') ? 'active' : '' }}" href="{{ route('user.riwayat') }}">
                             <i class="bi bi-clock-history"></i>
                             <span>Riwayat</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">
                             <i class="bi bi-person-circle"></i>
                             <span>Profil</span>
                         </a>

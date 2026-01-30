@@ -14,6 +14,11 @@
                 <p class="card-text text-muted">
                     Ini adalah dashboard Anda. Lihat informasi kehadiran dan riwayat aktivitas Anda di sini.
                 </p>
+                @if(!$mahasiswa)
+                    <div class="alert alert-warning mb-0">
+                        Data mahasiswa belum terhubung ke akun Anda.
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -26,7 +31,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-white-50 mb-2">Kehadiran Bulan Ini</h6>
-                    <h2 class="mb-0">0</h2>
+                    <h2 class="mb-0">{{ $monthlyAttendanceCount }}</h2>
                     <small class="text-white-50">Hari</small>
                 </div>
                 <div class="fs-1 opacity-50">
@@ -41,13 +46,9 @@
                 <div>
                     <h6 class="text-white-50 mb-2">Kehadiran Hari Ini</h6>
                     <h2 class="mb-0">
-                        @if(true)
-                            <i class="bi bi-check-circle"></i>
-                        @else
-                            <i class="bi bi-x-circle"></i>
-                        @endif
+                        <i class="bi {{ $todayStatusIcon }}"></i>
                     </h2>
-                    <small class="text-white-50">Status</small>
+                    <small class="text-white-50">{{ $todayStatusLabel }}</small>
                 </div>
                 <div class="fs-1 opacity-50">
                     <i class="bi bi-clock-history"></i>
@@ -60,7 +61,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-white-50 mb-2">Persentase Kehadiran</h6>
-                    <h2 class="mb-0">0%</h2>
+                    <h2 class="mb-0">{{ $attendancePercentage }}%</h2>
                     <small class="text-white-50">Dari total hari</small>
                 </div>
                 <div class="fs-1 opacity-50">
@@ -92,12 +93,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-4">
-                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                    Belum ada riwayat kehadiran
-                                </td>
-                            </tr>
+                            @php
+                                $statusClasses = [
+                                    'hadir' => 'bg-success',
+                                    'terlambat' => 'bg-warning text-dark',
+                                    'izin' => 'bg-info text-dark',
+                                    'sakit' => 'bg-secondary',
+                                    'alpha' => 'bg-danger',
+                                ];
+                            @endphp
+                            @forelse($recentAttendances as $attendance)
+                                <tr>
+                                    <td>{{ $attendance->sesi?->tanggal?->format('d/m/Y') ?? '-' }}</td>
+                                    <td>{{ $attendance->waktu_hadir?->format('H:i') ?? '-' }}</td>
+                                    <td>{{ $attendance->waktu_keluar?->format('H:i') ?? '-' }}</td>
+                                    <td>
+                                        <span class="badge {{ $statusClasses[$attendance->status] ?? 'bg-secondary' }}">
+                                            {{ strtoupper($attendance->status) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        Belum ada riwayat kehadiran
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -108,24 +131,20 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="bi bi-lightning-charge me-2"></i>Quick Actions
+                    <i class="bi bi-list-check me-2"></i>Menu Cepat
                 </h5>
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Absen Masuk
-                    </button>
-                    <button class="btn btn-outline-danger">
-                        <i class="bi bi-box-arrow-right me-2"></i>Absen Keluar
-                    </button>
-                    <hr>
-                    <button class="btn btn-outline-info">
-                        <i class="bi bi-person-circle me-2"></i>Lihat Profil
-                    </button>
-                    <button class="btn btn-outline-secondary">
-                        <i class="bi bi-file-earmark-text me-2"></i>Riwayat Lengkap
-                    </button>
+                    <a class="btn btn-outline-primary" href="{{ route('user.kehadiran') }}">
+                        <i class="bi bi-calendar-check me-2"></i>Kehadiran Saya
+                    </a>
+                    <a class="btn btn-outline-secondary" href="{{ route('user.riwayat') }}">
+                        <i class="bi bi-clock-history me-2"></i>Riwayat Kehadiran
+                    </a>
+                    <a class="btn btn-outline-warning" href="{{ route('user.profile') }}">
+                        <i class="bi bi-person-circle me-2"></i>Profil
+                    </a>
                 </div>
             </div>
         </div>
@@ -140,6 +159,10 @@
                 <p class="mb-2">
                     <strong>Email:</strong><br>
                     <small class="text-muted">{{ auth()->user()->email }}</small>
+                </p>
+                <p class="mb-2">
+                    <strong>Kelas:</strong><br>
+                    <small class="text-muted">{{ $mahasiswa?->kelas ?? '-' }}</small>
                 </p>
                 <p class="mb-0">
                     <strong>Bergabung:</strong><br>

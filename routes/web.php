@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\SesiController;
 use App\Http\Controllers\Admin\KehadiranController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -70,9 +71,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // User Routes
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/kehadiran', [UserDashboardController::class, 'kehadiran'])->name('kehadiran');
+    Route::get('/riwayat', [UserDashboardController::class, 'riwayat'])->name('riwayat');
+    Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
 });
 
 require __DIR__.'/auth.php';
