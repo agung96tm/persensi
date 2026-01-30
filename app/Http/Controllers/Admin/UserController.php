@@ -49,7 +49,7 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'role' => 'user',
         ]);
 
@@ -90,7 +90,7 @@ class UserController extends Controller
 
         // Update password jika diisi
         if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            $data['password'] = $request->password;
         }
 
         $user->update($data);
